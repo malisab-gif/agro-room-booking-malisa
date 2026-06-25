@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ระบบจองห้อง งานอาคารสถานที่ คณะอุตสาหกรรมเกษตร</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<style>
+:root{
+  --lotus:#C06080;--lotus-light:#E8A0B8;--lotus-pale:#FDF0F4;--lotus-mid:#F5D0DC;
+  --lotus-dark:#8B3A56;--lotus-deep:#5C1A30;
+  --gold:#C8963C;--gold-light:#F5E0B0;--gold-pale:#FDF8F0;
+  --green:#2D7A4F;--green-bg:#E8F5EE;
+  --text:#2C1A22;--text2:#6B4455;--text3:#A07888;
+  --bg:#FBF4F6;--surface:#FFFFFF;--surface2:#FEF7F9;
+  --border:#F0CDD8;--border2:#E0B0C0;
+  --danger:#C0392B;--danger-bg:#FDEDEB;
+  --radius:12px;--radius-lg:18px;
+  --shadow:0 2px 8px rgba(192,96,128,.10);
+  --shadow-lg:0 8px 32px rgba(192,96,128,.18);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{font-family:'Sarabun',sans-serif;background:var(--bg);color:var(--text);font-size:16px;line-height:1.65;}
+
+/* ── TOPBAR ── */
+.topbar{background:linear-gradient(135deg,var(--lotus-deep) 0%,var(--lotus) 60%,var(--lotus-light) 100%);color:#fff;padding:0 1.5rem;height:68px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:300;box-shadow:0 3px 16px rgba(92,26,48,.25);}
+.tb-brand{display:flex;align-items:center;gap:12px;}
+.tb-logo{width:44px;height:44px;background:rgba(255,255,255,.18);border:2px solid rgba(255,255,255,.4);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+.tb-title{font-size:16px;font-weight:800;letter-spacing:.2px;text-shadow:0 1px 3px rgba(0,0,0,.2);}
+.tb-sub{font-size:12px;opacity:.8;margin-top:1px;}
+.tb-right{display:flex;align-items:center;gap:8px;}
+.tb-date{font-size:12px;background:rgba(255,255,255,.18);padding:4px 12px;border-radius:20px;white-space:nowrap;}
+.lang-btn{font-size:12.5px;padding:5px 12px;border-radius:20px;border:1.5px solid rgba(255,255,255,.45);background:none;color:#fff;cursor:pointer;font-family:inherit;font-weight:600;transition:all .15s;}
+.lang-btn:hover{background:rgba(255,255,255,.18);}
+.lang-btn.active{background:var(--gold);border-color:var(--gold);color:var(--lotus-deep);}
+@media(max-width:640px){.topbar{padding:0 .9rem;height:58px;}.tb-date{display:none;}.tb-title{font-size:14px;}}
+
+/* ── LOTUS DECO BAR ── */
+.deco-bar{background:linear-gradient(90deg,var(--lotus-deep),var(--lotus),var(--gold),var(--lotus),var(--lotus-deep));height:4px;}
+
+/* ── NOTICE ── */
+.notice{background:var(--gold-pale);border-bottom:1px solid var(--gold-light);padding:9px 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+.notice-txt{font-size:13.5px;color:#7C5C10;display:flex;align-items:center;gap:6px;font-weight:500;}
+.btn-cal{font-size:13px;padding:6px 16px;background:var(--lotus);color:#fff;border:none;border-radius:8px;cursor:pointer;font-family:inherit;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;gap:5px;transition:all .15s;white-space:nowrap;box-shadow:0 2px 8px rgba(192,96,128,.3);}
+.btn-cal:hover{background:var(--lotus-dark);transform:translateY(-1px);}
+
+/* ── LAYOUT ── */
+.layout{max-width:1180px;margin:0 auto;padding:1.4rem 1.2rem 3rem;display:grid;grid-template-columns:1fr 390px;gap:1.2rem;align-items:start;}
+@media(max-width:920px){.layout{grid-template-columns:1fr;}}
+
+/* ── CARD ── */
+.card{background:var(--surface);border-radius:var(--radius-lg);box-shadow:var(--shadow);border:1px solid var(--border);overflow:hidden;margin-bottom:1.1rem;}
+.ch{padding:1rem 1.3rem .8rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,var(--lotus-pale),#fff);}
+.ch-icon{width:34px;height:34px;border-radius:9px;background:var(--lotus-mid);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.ch-title{font-size:15px;font-weight:800;color:var(--lotus-dark);}
+.ch-sub{font-size:12px;color:var(--text3);}
+.cb{padding:1.1rem 1.3rem;}
+
+/* ── STATS ── */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1.1rem;}
+.sbox{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;text-align:center;box-shadow:var(--shadow);position:relative;overflow:hidden;}
+.sbox::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--lotus),var(--lotus-light));}
+.snum{font-size:28px;font-weight:800;color:var(--lotus);line-height:1.1;margin-top:4px;}
+.slbl{font-size:11.5px;color:var(--text3);margin-top:2px;line-height:1.4;}
+
+/* ── TABS ── */
+.tab-wrap{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px;}
+.tab-btn{padding:7px 15px;border-radius:20px;font-size:13.5px;border:1.5px solid var(--border2);cursor:pointer;background:var(--surface);color:var(--text2);transition:all .12s;font-family:inherit;font-weight:600;}
+.tab-btn:hover{border-color:var(--lotus);color:var(--lotus);background:var(--lotus-pale);}
+.tab-btn.active{background:var(--lotus);color:#fff;border-color:var(--lotus);box-shadow:0 2px 8px rgba(192,96,128,.3);}
+
+/* ── ROOM GRID ── */
+.room-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;}
+@media(max-width:620px){.room-grid{grid-template-columns:repeat(2,1fr);}}
+.rt{border:2px solid var(--border);border-radius:var(--radius);padding:10px 10px 9px;cursor:pointer;transition:all .15s;background:var(--surface2);position:relative;user-select:none;}
+.rt:hover{border-color:var(--lotus-light);background:var(--lotus-pale);transform:translateY(-2px);box-shadow:0 4px 14px rgba(192,96,128,.15);}
+.rt.sel{border-color:var(--lotus);background:var(--lotus-pale);box-shadow:0 0 0 3px rgba(192,96,128,.18);}
+.rt.hid{display:none;}
+.ck{display:none;position:absolute;top:6px;right:6px;width:20px;height:20px;border-radius:50%;background:var(--lotus);color:#fff;font-size:11px;align-items:center;justify-content:center;font-weight:800;box-shadow:0 2px 6px rgba(192,96,128,.4);}
+.rt.sel .ck{display:flex;}
+.re{font-size:20px;margin-bottom:5px;display:block;}
+.rn{font-size:12.5px;font-weight:700;color:var(--lotus-dark);line-height:1.3;}
+.ren{font-size:10.5px;color:var(--text3);margin-bottom:5px;}
+.rcap{display:inline-flex;align-items:center;gap:2px;font-size:11px;color:var(--text2);background:#fff;border:1px solid var(--border);border-radius:20px;padding:2px 8px;font-weight:600;}
+.ttag{display:inline-block;font-size:9.5px;padding:1px 6px;border-radius:10px;margin-left:3px;vertical-align:middle;font-weight:700;}
+.tc{background:#FCE4EF;color:#9B1A5C;}.tr{background:#FDE8D8;color:#9B4A1A;}
+.tl{background:#E8F5E9;color:#1A6B3A;}.tw{background:#EDE9FE;color:#4C1D95;}.tk{background:#FFF3CD;color:#856404;}
+
+/* ── SEC DIV ── */
+.sdiv{display:flex;align-items:center;gap:8px;margin:13px 0 9px;}
+.sdiv span{font-size:11.5px;font-weight:800;color:var(--lotus);text-transform:uppercase;letter-spacing:.6px;white-space:nowrap;}
+.sdiv::before,.sdiv::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--lotus-light),var(--border));}
+
+/* ── CHIPS ── */
+.chips{display:flex;flex-wrap:wrap;gap:7px;}
+.chip{display:inline-flex;align-items:center;gap:4px;padding:6px 14px;border-radius:20px;font-size:13.5px;border:1.5px solid var(--border2);cursor:pointer;background:var(--surface);color:var(--text2);transition:all .12s;user-select:none;font-family:inherit;font-weight:500;}
+.chip:hover{border-color:var(--lotus-light);color:var(--lotus-dark);background:var(--lotus-pale);}
+.chip.on{background:linear-gradient(135deg,var(--lotus),var(--lotus-dark));color:#fff;border-color:var(--lotus);font-weight:700;box-shadow:0 2px 8px rgba(192,96,128,.3);}
+
+/* ── FORM ── */
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+@media(max-width:520px){.fg{grid-template-columns:1fr;}}
+.fi{display:flex;flex-direction:column;gap:5px;}
+.fi label{font-size:13.5px;font-weight:700;color:var(--text2);display:flex;align-items:center;gap:5px;}
+.fi label .en{font-size:11px;color:var(--text3);font-weight:400;}
+.req{color:var(--lotus);font-size:12px;}
+.fi input,.fi select,.fi textarea{padding:10px 13px;border:1.5px solid var(--border2);border-radius:var(--radius);font-size:15px;background:var(--surface);color:var(--text);font-family:inherit;transition:all .15s;width:100%;}
+.fi input:focus,.fi select:focus,.fi textarea:focus{outline:none;border-color:var(--lotus);box-shadow:0 0 0 3px rgba(192,96,128,.12);}
+.fi textarea{resize:vertical;min-height:80px;}
+.tr-row{display:grid;grid-template-columns:1fr 20px 1fr;align-items:end;gap:8px;}
+.tsep{text-align:center;color:var(--text3);font-size:16px;padding-bottom:10px;}
+
+/* ── SUBMIT ── */
+.btn-sub{width:100%;padding:14px;background:linear-gradient(135deg,var(--lotus-dark),var(--lotus));color:#fff;font-size:16px;font-weight:800;border:none;border-radius:var(--radius);cursor:pointer;font-family:inherit;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:8px;box-shadow:0 4px 16px rgba(192,96,128,.35);letter-spacing:.3px;}
+.btn-sub:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(192,96,128,.45);}
+.btn-sub:active{transform:scale(.99);}
+.btn-sub:disabled{background:#C8B0BA;cursor:not-allowed;box-shadow:none;transform:none;}
+.spinner{width:18px;height:18px;border:2.5px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:none;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* ── ALERTS ── */
+.alert{display:none;padding:12px 16px;border-radius:var(--radius);font-size:14.5px;margin-bottom:1rem;}
+.alert.show{display:flex;align-items:flex-start;gap:10px;}
+.al-ok{background:var(--green-bg);color:var(--green);border:1px solid #A3D9B8;}
+.al-err{background:var(--danger-bg);color:var(--danger);border:1px solid #F5B7B1;}
+
+/* ── MODAL ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(92,26,48,.45);z-index:500;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(3px);}
+.modal-overlay.show{display:flex;}
+.modal{background:#fff;border-radius:var(--radius-lg);padding:2rem 1.8rem;max-width:460px;width:100%;box-shadow:0 24px 64px rgba(92,26,48,.25);text-align:center;animation:popIn .25s ease;border-top:4px solid var(--lotus);}
+@keyframes popIn{from{opacity:0;transform:scale(.9);}to{opacity:1;transform:scale(1);}}
+.modal-icon{font-size:54px;margin-bottom:12px;line-height:1;}
+.modal-title{font-size:20px;font-weight:800;margin-bottom:6px;color:var(--lotus-dark);}
+.modal-sub{font-size:14px;color:var(--text2);line-height:1.6;margin-bottom:16px;}
+.modal-ref{font-size:13px;background:var(--lotus-pale);border:1px solid var(--lotus-mid);border-radius:8px;padding:8px 14px;margin-bottom:16px;color:var(--lotus-dark);font-family:monospace;font-weight:600;letter-spacing:.5px;}
+.modal-emails{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-bottom:16px;}
+.epill{display:inline-flex;align-items:center;gap:4px;background:var(--lotus-pale);color:var(--lotus-dark);border:1px solid var(--lotus-mid);border-radius:20px;padding:3px 12px;font-size:12.5px;font-weight:600;}
+.modal-btn{padding:11px 30px;background:linear-gradient(135deg,var(--lotus-dark),var(--lotus));color:#fff;border:none;border-radius:var(--radius);cursor:pointer;font-family:inherit;font-size:15px;font-weight:700;box-shadow:0 3px 12px rgba(192,96,128,.35);transition:all .15s;}
+.modal-btn:hover{transform:translateY(-1px);box-shadow:0 5px 16px rgba(192,96,128,.45);}
+
+/* ── RIGHT PANEL ── */
+.ph{padding:.9rem 1.3rem .8rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:linear-gradient(135deg,var(--lotus-pale),#fff);}
+.pt{font-size:14.5px;font-weight:800;color:var(--lotus-dark);display:flex;align-items:center;gap:7px;}
+.bc{font-size:11.5px;padding:2px 10px;background:var(--lotus);color:#fff;border-radius:20px;font-weight:700;}
+.btn-clr{font-size:12px;padding:4px 11px;background:none;border:1.5px solid var(--border2);border-radius:7px;cursor:pointer;color:var(--danger);font-family:inherit;font-weight:600;transition:all .12s;}
+.btn-clr:hover{background:var(--danger-bg);}
+.blist{padding:.8rem 1rem;max-height:76vh;overflow-y:auto;}
+.bi{border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;margin-bottom:10px;background:var(--surface2);position:relative;animation:sli .22s ease;border-left:3px solid var(--lotus-light);}
+@keyframes sli{from{opacity:0;transform:translateY(-7px);}to{opacity:1;transform:translateY(0);}}
+.bi:hover{box-shadow:var(--shadow-lg);}
+.bih{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px;gap:6px;}
+.brn{font-size:13.5px;font-weight:800;color:var(--lotus-dark);}
+.bren{font-size:11px;color:var(--text3);}
+.bst{font-size:10.5px;padding:2px 9px;border-radius:20px;font-weight:700;white-space:nowrap;flex-shrink:0;}
+.bst-ok{background:var(--green-bg);color:var(--green);border:1px solid #A3D9B8;}
+.bst-wait{background:var(--gold-pale);color:#7C5C10;border:1px solid var(--gold-light);}
+.bm{font-size:12.5px;color:var(--text2);display:flex;flex-direction:column;gap:3px;}
+.bm span{display:flex;align-items:flex-start;gap:5px;}
+.mi{opacity:.5;font-size:11px;flex-shrink:0;margin-top:2px;}
+.btn-del{position:absolute;top:8px;right:8px;width:22px;height:22px;border-radius:50%;background:none;border:1px solid var(--border);cursor:pointer;color:var(--text3);font-size:11px;display:flex;align-items:center;justify-content:center;transition:all .12s;}
+.btn-del:hover{background:var(--danger-bg);border-color:#F5B7B1;color:var(--danger);}
+.empty{text-align:center;padding:2.5rem 1rem;color:var(--text3);font-size:14px;}
+.eico{font-size:38px;margin-bottom:8px;display:block;opacity:.4;}
+
+/* ── LINE BADGE ── */
+.line-badge{display:inline-flex;align-items:center;gap:5px;background:#06C755;color:#fff;border-radius:20px;padding:4px 12px;font-size:12px;font-weight:700;text-decoration:none;transition:all .15s;}
+.line-badge:hover{background:#05a847;transform:translateY(-1px);}
+
+@media print{.topbar,.notice,.btn-sub,.btn-clr,.btn-del,.tab-wrap,.modal-overlay{display:none!important;}body{background:#fff;}.layout{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<div class="deco-bar"></div>
+<header class="topbar">
+  <div class="tb-brand">
+    <div class="tb-logo">🌸</div>
+    <div>
+      <div class="tb-title" id="t-sys">ระบบจองห้อง งานอาคารสถานที่</div>
+      <div class="tb-sub" id="t-fac">คณะอุตสาหกรรมเกษตร · Faculty of Agro-Industry, PSU</div>
+    </div>
+  </div>
+  <div class="tb-right">
+    <div class="tb-date" id="dateNow"></div>
+    <button class="lang-btn active" id="btnTH" data-lang="th">🇹🇭 ไทย</button>
+    <button class="lang-btn" id="btnEN" data-lang="en">🇬🇧 EN</button>
+  </div>
+</header>
+<div class="deco-bar" style="opacity:.4;"></div>
+
+<div class="notice">
+  <div class="notice-txt">🌸 <span id="t-notice">กรุณาตรวจสอบตารางห้องว่างก่อนทำการจอง · Check availability before booking</span></div>
+  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+    <a class="btn-cal" href="https://emailpsuac.sharepoint.com/sites/agropsu/Lists/120/calendar.aspx" target="_blank" rel="noopener">
+      📅 <span id="t-cal">ตรวจสอบห้องว่าง</span>
+    </a>
+    <a class="line-badge" href="https://line.me/R/ti/g/LINE_GROUP_ID" target="_blank" rel="noopener" id="lineLink">
+      💬 <span id="t-line">LINE งานอาคาร</span>
+    </a>
+  </div>
+</div>
+
+<!-- SUCCESS MODAL -->
+<div class="modal-overlay" id="modalOK">
+  <div class="modal">
+    <div class="modal-icon">🌸</div>
+    <div class="modal-title" id="mo-title">จองห้องสำเร็จ!</div>
+    <div class="modal-sub" id="mo-sub">ระบบส่งอีเมลยืนยันไปยังผู้จองและเจ้าหน้าที่แล้ว กรุณาตรวจสอบอีเมลของท่าน</div>
+    <div class="modal-emails">
+      <span class="epill">📧 <span id="mo-email1">ผู้จอง</span></span>
+      <span class="epill">📧 malisa.b@psu.ac.th</span>
+    </div>
+    <div style="margin-bottom:14px;">
+      <a class="line-badge" href="https://line.me/R/ti/g/LINE_GROUP_ID" target="_blank" rel="noopener" style="margin:0 auto;display:inline-flex;">
+        💬 <span id="mo-line">แจ้งงานอาคารผ่าน LINE</span>
+      </a>
+    </div>
+    <div class="modal-ref" id="mo-ref">REF: —</div>
+    <button class="modal-btn" id="btnModalClose">ปิด / Close</button>
+  </div>
+</div>
+
+<!-- FAIL MODAL -->
+<div class="modal-overlay" id="modalFail">
+  <div class="modal">
+    <div class="modal-icon">⚠️</div>
+    <div class="modal-title" style="color:var(--danger);" id="mf-title">บันทึกสำเร็จ แต่ส่งอีเมลไม่ได้</div>
+    <div class="modal-sub" id="mf-sub">ข้อมูลการจองได้รับการบันทึกแล้ว กรุณาแจ้งเจ้าหน้าที่ผ่าน LINE หรือติดต่อ malisa.b@psu.ac.th</div>
+    <div style="margin-bottom:14px;">
+      <a class="line-badge" href="https://line.me/R/ti/g/LINE_GROUP_ID" target="_blank" rel="noopener" style="margin:0 auto;display:inline-flex;">
+        💬 <span id="mf-line">แจ้งงานอาคารผ่าน LINE</span>
+      </a>
+    </div>
+    <div class="modal-ref" id="mf-ref">REF: —</div>
+    <button class="modal-btn" id="btnFailClose">รับทราบ / OK</button>
+  </div>
+</div>
+
+<div class="layout">
+<div>
+
+  <div id="aER" class="alert al-err"><span>⚠️</span><div id="aERmsg">กรุณากรอกข้อมูลให้ครบถ้วน</div></div>
+
+  <!-- STATS -->
+  <div class="stats">
+    <div class="sbox"><div class="snum" id="sTotal">0</div><div class="slbl" id="t-s1">รายการจองทั้งหมด<br>Total Bookings</div></div>
+    <div class="sbox"><div class="snum" id="sToday">0</div><div class="slbl" id="t-s2">วันนี้<br>Today</div></div>
+    <div class="sbox"><div class="snum">21</div><div class="slbl" id="t-s3">ห้องทั้งหมด<br>Rooms</div></div>
+  </div>
+
+  <!-- ROOM -->
+  <div class="card">
+    <div class="ch"><div class="ch-icon">🏛</div><div>
+      <div class="ch-title" id="t-rh">เลือกห้อง / Select Room <span class="req">*</span></div>
+      <div class="ch-sub" id="t-rs">คลิกเพื่อเลือกห้องที่ต้องการ · Click to select a room</div>
+    </div></div>
+    <div class="cb">
+      <div class="tab-wrap">
+        <button class="tab-btn active" data-filter="all">ทั้งหมด / All</button>
+        <button class="tab-btn" data-filter="conf">💼 ห้องประชุม</button>
+        <button class="tab-btn" data-filter="recep">🛋 ห้องรับรอง</button>
+        <button class="tab-btn" data-filter="class">📖 ห้องเรียน</button>
+        <button class="tab-btn" data-filter="cowork">💻 Co-working</button>
+        <button class="tab-btn" data-filter="other">📋 อื่นๆ</button>
+      </div>
+
+      <div class="sdiv rs" data-s="conf"><span>ห้องประชุม · Meeting Rooms</span></div>
+      <div class="room-grid" id="g-conf">
+        <div class="rt" data-type="conf" data-th="ห้องประชุมคลินิก" data-en="Clinic Meeting Room" data-cap="10"><div class="ck">✓</div><span class="re">💼</span><div class="rn">ประชุมคลินิก<span class="ttag tc">ประชุม</span></div><div class="ren">Clinic Meeting Room</div><div class="rcap">👥 10 คน</div></div>
+        <div class="rt" data-type="conf" data-th="ห้องประชุม Agrocafe" data-en="Agrocafe Meeting" data-cap="-"><div class="ck">✓</div><span class="re">☕</span><div class="rn">ประชุม Agrocafe<span class="ttag tc">ประชุม</span></div><div class="ren">Agrocafe Meeting Room</div><div class="rcap">👥 ระบุเพิ่มเติม</div></div>
+        <div class="rt" data-type="conf" data-th="ห้องประชุม 1" data-en="Meeting Room 1" data-cap="20"><div class="ck">✓</div><span class="re">💼</span><div class="rn">ห้องประชุม 1<span class="ttag tc">ประชุม</span></div><div class="ren">Meeting Room 1</div><div class="rcap">👥 20 คน</div></div>
+        <div class="rt" data-type="conf" data-th="ห้องประชุม 2" data-en="Meeting Room 2" data-cap="15"><div class="ck">✓</div><span class="re">💼</span><div class="rn">ห้องประชุม 2<span class="ttag tc">ประชุม</span></div><div class="ren">Meeting Room 2</div><div class="rcap">👥 15 คน</div></div>
+        <div class="rt" data-type="conf" data-th="ห้องประชุม 3 สนล." data-en="Meeting Room 3 (Snl.)" data-cap="8"><div class="ck">✓</div><span class="re">💼</span><div class="rn">ห้องประชุม 3 สนล.<span class="ttag tc">ประชุม</span></div><div class="ren">Meeting Room 3</div><div class="rcap">👥 8 คน</div></div>
+        <div class="rt" data-type="conf" data-th="ห้องประชุม 4 สนล." data-en="Meeting Room 4 (Snl.)" data-cap="5"><div class="ck">✓</div><span class="re">💼</span><div class="rn">ห้องประชุม 4 สนล.<span class="ttag tc">ประชุม</span></div><div class="ren">Meeting Room 4</div><div class="rcap">👥 5 คน</div></div>
+      </div>
+
+      <div class="sdiv rs" data-s="recep"><span>ห้องรับรอง · Reception</span></div>
+      <div class="room-grid" id="g-recep">
+        <div class="rt" data-type="recep" data-th="ห้องรับรองชั้น 2" data-en="Reception Room Floor 2" data-cap="6"><div class="ck">✓</div><span class="re">🛋</span><div class="rn">ห้องรับรองชั้น 2<span class="ttag tr">รับรอง</span></div><div class="ren">Reception Room Floor 2</div><div class="rcap">👥 6 คน</div></div>
+      </div>
+
+      <div class="sdiv rs" data-s="class"><span>ห้องเรียน · Classrooms</span></div>
+      <div class="room-grid" id="g-class">
+        <div class="rt" data-type="class" data-th="ห้องเรียน 2202" data-en="Classroom 2202" data-cap="120"><div class="ck">✓</div><span class="re">🏫</span><div class="rn">ห้องเรียน 2202<span class="ttag tk">เรียน</span></div><div class="ren">Classroom 2202</div><div class="rcap">👥 120 คน</div></div>
+        <div class="rt" data-type="class" data-th="ห้องเรียน 3208" data-en="Classroom 3208" data-cap="30"><div class="ck">✓</div><span class="re">📖</span><div class="rn">ห้องเรียน 3208<span class="ttag tk">เรียน</span></div><div class="ren">Classroom 3208</div><div class="rcap">👥 30 คน</div></div>
+        <div class="rt" data-type="class" data-th="ห้องเรียน 3301" data-en="Classroom 3301" data-cap="200"><div class="ck">✓</div><span class="re">🏛</span><div class="rn">ห้องเรียน 3301<span class="ttag tk">เรียน</span></div><div class="ren">Classroom 3301 (Large)</div><div class="rcap">👥 200 คน</div></div>
+        <div class="rt" data-type="class" data-th="ห้องเรียน 3303" data-en="Classroom 3303" data-cap="30"><div class="ck">✓</div><span class="re">📖</span><div class="rn">ห้องเรียน 3303<span class="ttag tk">เรียน</span></div><div class="ren">Classroom 3303</div><div class="rcap">👥 30 คน</div></div>
+        <div class="rt" data-type="class" data-th="ห้องเรียน 3304" data-en="Classroom 3304" data-cap="30"><div class="ck">✓</div><span class="re">📖</span><div class="rn">ห้องเรียน 3304<span class="ttag tk">เรียน</span></div><div class="ren">Classroom 3304</div><div class="rcap">👥 30 คน</div></div>
+        <div class="rt" data-type="class" data-th="ห้องเรียน 3305" data-en="Classroom 3305" data-cap="40"><div class="ck">✓</div><span class="re">📖</span><div class="rn">ห้องเรียน 3305<span class="ttag tk">เรียน</span></div><div class="ren">Classroom 3305</div><div class="rcap">👥 40 คน</div></div>
+        <div class="rt" data-type="class" data-th="ห้องเรียน 3306" data-en="Classroom 3306" data-cap="40"><div class="ck">✓</div><span class="re">📖</span><div class="rn">ห้องเรียน 3306<span class="ttag tk">เรียน</span></div><div class="ren">Classroom 3306</div><div class="rcap">👥 40 คน</div></div>
+        <div class="rt" data-type="class" data-th="ห้องเรียน 3307" data-en="Classroom 3307" data-cap="50"><div class="ck">✓</div><span class="re">📖</span><div class="rn">ห้องเรียน 3307<span class="ttag tk">เรียน</span></div><div class="ren">Classroom 3307</div><div class="rcap">👥 50 คน</div></div>
+        <div class="rt" data-type="class" data-th="ห้องเรียน 3308" data-en="Classroom 3308" data-cap="50"><div class="ck">✓</div><span class="re">📖</span><div class="rn">ห้องเรียน 3308<span class="ttag tk">เรียน</span></div><div class="ren">Classroom 3308</div><div class="rcap">👥 50 คน</div></div>
+        <div class="rt" data-type="class" data-th="ห้องคอม 3309" data-en="Computer Room 3309" data-cap="40"><div class="ck">✓</div><span class="re">🖥</span><div class="rn">ห้องคอม 3309<span class="ttag tk">คอมพิวเตอร์</span></div><div class="ren">Computer Room 3309</div><div class="rcap">👥 40 คน</div></div>
+        <div class="rt" data-type="class" data-th="ห้องคอม 3310" data-en="Computer Room 3310" data-cap="10"><div class="ck">✓</div><span class="re">🖥</span><div class="rn">ห้องคอม 3310<span class="ttag tk">คอมพิวเตอร์</span></div><div class="ren">Computer Room 3310</div><div class="rcap">👥 10 คน</div></div>
+      </div>
+
+      <div class="sdiv rs" data-s="cowork"><span>Co-working Space</span></div>
+      <div class="room-grid" id="g-cowork">
+        <div class="rt" data-type="cowork" data-th="Co-Working Space" data-en="Co-Working Space" data-cap="-"><div class="ck">✓</div><span class="re">💻</span><div class="rn">Co-Working Space<span class="ttag tw">Co-work</span></div><div class="ren">Co-Working Space</div><div class="rcap">👥 ระบุเพิ่มเติม</div></div>
+      </div>
+
+      <div class="sdiv rs" data-s="other"><span>อื่นๆ · Others</span></div>
+      <div class="room-grid" id="g-other">
+        <div class="rt" data-type="other" data-th="ศูนย์ประสานงาน 2209" data-en="Coordination Center 2209" data-cap="-"><div class="ck">✓</div><span class="re">📋</span><div class="rn">ศูนย์ประสานงาน 2209<span class="ttag tl">อื่นๆ</span></div><div class="ren">Coordination Center 2209</div><div class="rcap">👥 ระบุเพิ่มเติม</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ACTIVITY -->
+  <div class="card">
+    <div class="ch"><div class="ch-icon">🎯</div><div>
+      <div class="ch-title" id="t-ah">กิจกรรมการใช้ห้อง / Activity <span class="req">*</span></div>
+      <div class="ch-sub" id="t-as">เลือกประเภทกิจกรรม · Select activity type</div>
+    </div></div>
+    <div class="cb">
+      <div class="chips" id="actChips">
+        <button type="button" class="chip" data-v="สอน / Teaching">📝 สอน / Teaching</button>
+        <button type="button" class="chip" data-v="บรรยาย / Lecture">🎤 บรรยาย / Lecture</button>
+        <button type="button" class="chip" data-v="ประชุม / Meeting">💼 ประชุม / Meeting</button>
+        <button type="button" class="chip" data-v="อบรม / Training">📚 อบรม / Training</button>
+        <button type="button" class="chip" data-v="สัมมนา / Seminar">🏫 สัมมนา / Seminar</button>
+        <button type="button" class="chip" data-v="สอบ / Examination">📋 สอบ / Examination</button>
+        <button type="button" class="chip" data-v="นำเสนองาน / Presentation">📊 นำเสนองาน</button>
+        <button type="button" class="chip" data-v="สัมภาษณ์ / Interview">🤝 สัมภาษณ์</button>
+        <button type="button" class="chip" data-v="กิจกรรมนิสิต / Student Activity">🎉 กิจกรรมนิสิต</button>
+        <button type="button" class="chip" data-v="รับรองบุคคลภายนอก / Guest Reception">🤵 รับรองบุคคลภายนอก</button>
+        <button type="button" class="chip" data-v="อื่นๆ / Other">➕ อื่นๆ / Other</button>
+      </div>
+      <div style="margin-top:11px;">
+        <input type="text" id="actNote" placeholder="รายละเอียดเพิ่มเติม / Additional detail (optional)" style="width:100%;padding:10px 13px;border:1.5px solid var(--border2);border-radius:var(--radius);font-size:14.5px;font-family:inherit;color:var(--text);background:var(--surface);">
+      </div>
+    </div>
+  </div>
+
+  <!-- DATE & TIME -->
+  <div class="card">
+    <div class="ch"><div class="ch-icon">📅</div><div>
+      <div class="ch-title" id="t-dh">วัน / เวลาขอใช้ · Date &amp; Time <span class="req">*</span></div>
+      <div class="ch-sub" id="t-ds">กำหนดช่วงเวลาการใช้งาน · Set your usage period</div>
+    </div></div>
+    <div class="cb">
+      <div class="fg">
+        <div class="fi"><label id="t-ld">วันที่ <span class="en">Date</span> <span class="req">*</span></label><input type="date" id="bookDate"></div>
+        <div class="fi"><label id="t-la">จำนวนผู้เข้าร่วม <span class="en">Attendees</span> <span class="req">*</span></label><input type="number" id="attendees" min="1" max="999" placeholder="จำนวนคน"></div>
+      </div>
+      <div class="fi">
+        <label id="t-lt">เวลา <span class="en">Time</span> <span class="req">*</span></label>
+        <div class="tr-row">
+          <div class="fi"><label style="font-size:12px;color:var(--text3);" id="t-ts">เริ่ม / Start</label><input type="time" id="startTime" value="08:30"></div>
+          <div class="tsep">→</div>
+          <div class="fi"><label style="font-size:12px;color:var(--text3);" id="t-te">สิ้นสุด / End</label><input type="time" id="endTime" value="12:00"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOOKER INFO -->
+  <div class="card">
+    <div class="ch"><div class="ch-icon">👤</div><div>
+      <div class="ch-title" id="t-ih">ข้อมูลผู้จอง · Booker Information</div>
+      <div class="ch-sub" id="t-is">กรอกข้อมูลสำหรับการติดต่อกลับ · Contact details</div>
+    </div></div>
+    <div class="cb">
+      <div style="margin-bottom:14px;">
+        <label style="font-size:13.5px;font-weight:700;color:var(--text2);display:block;margin-bottom:7px;" id="t-btype">ประเภทผู้จอง <span style="font-size:11px;font-weight:400;color:var(--text3);">Booker Type</span> <span class="req">*</span></label>
+        <div class="chips" id="btChips">
+          <button type="button" class="chip" data-v="นิสิต/นักศึกษาไทย Thai Student">🎓 นิสิต/นักศึกษาไทย</button>
+          <button type="button" class="chip" data-v="International Student">🌏 International Student</button>
+          <button type="button" class="chip" data-v="อาจารย์/เจ้าหน้าที่ Staff">👩‍🏫 อาจารย์/เจ้าหน้าที่</button>
+          <button type="button" class="chip" data-v="บุคคลภายนอก External">🤵 บุคคลภายนอก</button>
+        </div>
+      </div>
+      <div class="fg">
+        <div class="fi"><label id="t-fn">ชื่อ <span class="en">First Name</span> <span class="req">*</span></label><input type="text" id="firstName" placeholder="ชื่อ / First name"></div>
+        <div class="fi"><label id="t-ln">นามสกุล <span class="en">Last Name</span> <span class="req">*</span></label><input type="text" id="lastName" placeholder="นามสกุล / Last name"></div>
+      </div>
+      <div class="fg">
+        <div class="fi"><label id="t-ph">โทรศัพท์ <span class="en">Phone</span> <span class="req">*</span></label><input type="tel" id="phone" placeholder="0xx-xxx-xxxx"></div>
+        <div class="fi"><label id="t-em">อีเมล <span class="en">Email</span> <span class="req">*</span></label><input type="email" id="email" placeholder="example@psu.ac.th"></div>
+      </div>
+      <div class="fg">
+        <div class="fi"><label id="t-dp">หน่วยงาน / สาขาวิชา <span class="en">Dept.</span></label><input type="text" id="dept" placeholder="สาขาวิชา / Department"></div>
+        <div class="fi"><label id="t-pos">รหัสนิสิต / ตำแหน่ง <span class="en">ID / Position</span></label><input type="text" id="position" placeholder="เช่น 6610210001 / อาจารย์"></div>
+      </div>
+      <div class="fi" style="margin-bottom:0;">
+        <label id="t-nt">หมายเหตุ / ความต้องการพิเศษ <span class="en">Notes</span></label>
+        <textarea id="notes" placeholder="เช่น โปรเจกเตอร์, ไมโครโฟน, อุปกรณ์เพิ่มเติม / e.g. projector, microphone..."></textarea>
+      </div>
+      <button class="btn-sub" id="submitBtn">
+        <div class="spinner" id="spin"></div>
+        <span id="t-sub">🌸 ยืนยันการจอง / Confirm Booking</span>
+      </button>
+    </div>
+  </div>
+
+</div><!-- end left -->
+
+<!-- RIGHT PANEL -->
+<div>
+  <div class="card" style="position:sticky;top:82px;margin-bottom:0;">
+    <div class="ph">
+      <div class="pt">📋 <span id="t-lh">รายการจอง / Bookings</span> <span class="bc" id="bCount">0</span></div>
+      <button class="btn-clr" id="t-clr">ล้างทั้งหมด</button>
+    </div>
+    <div class="blist" id="bList">
+      <div class="empty"><span class="eico">🌸</span><div id="t-emp">ยังไม่มีรายการจอง</div><div style="font-size:12px;margin-top:3px;opacity:.7;">No bookings yet</div></div>
+    </div>
+  </div>
+</div>
+</div><!-- end layout -->
+
+<script>
+// ── CONFIG ──
+const EMAILJS_SERVICE_ID  = 'service_s2wl669';
+const EMAILJS_TEMPLATE_ID = 'template_nj8dfsb';
+const EMAILJS_PUBLIC_KEY  = 'l--L2_nETNqUvD8c1';
+const ADMIN_EMAIL         = 'malisa.b@psu.ac.th';
+// ⚠️ ใส่ URL กลุ่ม LINE งานอาคารสถานที่ของคุณตรงนี้
+// ตัวอย่าง: 'https://line.me/R/ti/g/xxxxxxxxxx'
+const LINE_GROUP_URL      = 'https://line.me/R/ti/g/LINE_GROUP_ID';
+
+try{ emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY }); }catch(e){}
+
+// ── Update all LINE links ──
+document.querySelectorAll('a[href*="LINE_GROUP_ID"]').forEach(a=>a.href=LINE_GROUP_URL);
+
+// ── STATE ──
+let selRoom=null,selAct=null,selBT=null,lang='th';
+let bks=[];
+try{bks=JSON.parse(localStorage.getItem('agro_bks6')||'[]');}catch(e){}
+
+const todayStr=new Date().toISOString().split('T')[0];
+document.getElementById('bookDate').value=todayStr;
+document.getElementById('bookDate').min=todayStr;
+
+// ── CLOCK ──
+const TM=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+const TD=['อา.','จ.','อ.','พ.','พฤ.','ศ.','ส.'];
+const EM=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const ED=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+function tick(){
+  const n=new Date(),p=x=>String(x).padStart(2,'0');
+  const t=p(n.getHours())+':'+p(n.getMinutes())+':'+p(n.getSeconds());
+  const el=document.getElementById('dateNow');if(!el)return;
+  el.textContent=lang==='th'
+    ?TD[n.getDay()]+' '+n.getDate()+' '+TM[n.getMonth()]+' '+(n.getFullYear()+543)+'  ·  '+t
+    :ED[n.getDay()]+' '+n.getDate()+' '+EM[n.getMonth()]+' '+n.getFullYear()+'  ·  '+t;
+}
+tick();setInterval(tick,1000);
+function fmtTH(ds){const d=new Date(ds+'T00:00:00');return TD[d.getDay()]+' '+d.getDate()+' '+TM[d.getMonth()]+' '+(d.getFullYear()+543);}
+function fmtEN(ds){const d=new Date(ds+'T00:00:00');return ED[d.getDay()]+' '+d.getDate()+' '+EM[d.getMonth()]+' '+d.getFullYear();}
+function genRef(){return 'AGR-'+Date.now().toString(36).toUpperCase().slice(-6);}
+
+// ── I18N ──
+const tx={
+  th:{sys:'ระบบจองห้อง งานอาคารสถานที่',fac:'คณะอุตสาหกรรมเกษตร · Faculty of Agro-Industry, PSU',
+    notice:'กรุณาตรวจสอบตารางห้องว่างก่อนทำการจอง',cal:'ตรวจสอบห้องว่าง',line:'LINE งานอาคาร',
+    rh:'เลือกห้อง / Select Room',rs:'คลิกเพื่อเลือกห้องที่ต้องการ',
+    ah:'กิจกรรมการใช้ห้อง / Activity',as:'เลือกประเภทกิจกรรม',
+    dh:'วัน / เวลาขอใช้ · Date & Time',ds:'กำหนดช่วงเวลาการใช้งาน',
+    ih:'ข้อมูลผู้จอง · Booker Information',is:'กรอกข้อมูลสำหรับการติดต่อกลับ',
+    lh:'รายการจอง / Bookings',sub:'🌸 ยืนยันการจอง / Confirm Booking',clr:'ล้างทั้งหมด',
+    emp:'ยังไม่มีรายการจอง',btype:'ประเภทผู้จอง',conf:'รอการยืนยัน',
+    s1:'รายการจองทั้งหมด<br>Total Bookings',s2:'วันนี้<br>Today',s3:'ห้องทั้งหมด<br>Rooms',
+    mo_title:'จองห้องสำเร็จ! 🌸',mo_sub:'ระบบส่งอีเมลยืนยันไปยังผู้จองและเจ้าหน้าที่แล้ว กรุณาตรวจสอบอีเมลของท่าน',
+    mo_line:'แจ้งงานอาคารผ่าน LINE',
+    mf_title:'บันทึกสำเร็จ แต่ส่งอีเมลไม่ได้',mf_sub:'ข้อมูลได้รับการบันทึกแล้ว กรุณาแจ้งเจ้าหน้าที่ผ่าน LINE หรือ malisa.b@psu.ac.th',
+    mf_line:'แจ้งงานอาคารผ่าน LINE'},
+  en:{sys:'Room Booking — Building & Facilities',fac:'Faculty of Agro-Industry, PSU',
+    notice:'Please check room availability before booking',cal:'Check Calendar',line:'LINE Building',
+    rh:'Select Room',rs:'Click to select a room',
+    ah:'Activity / Purpose',as:'Select activity type',
+    dh:'Date & Time',ds:'Set your usage period',
+    ih:'Booker Information',is:'Contact details for confirmation',
+    lh:'Bookings',sub:'🌸 Confirm Booking',clr:'Clear All',
+    emp:'No bookings yet',btype:'Booker Type',conf:'Pending',
+    s1:'Total Bookings',s2:'Today',s3:'Rooms',
+    mo_title:'Booking Confirmed! 🌸',mo_sub:'Confirmation email sent. Please check your email.',
+    mo_line:'Contact Building via LINE',
+    mf_title:'Saved — Email Failed',mf_sub:'Booking recorded. Please contact malisa.b@psu.ac.th or LINE.',
+    mf_line:'Contact Building via LINE'}
+};
+
+function setLang(l){
+  lang=l;
+  document.getElementById('btnTH').classList.toggle('active',l==='th');
+  document.getElementById('btnEN').classList.toggle('active',l==='en');
+  const t=tx[l];
+  const s=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
+  const h=(id,v)=>{const e=document.getElementById(id);if(e)e.innerHTML=v;};
+  s('t-sys',t.sys);s('t-fac',t.fac);s('t-notice',t.notice);s('t-cal',t.cal);s('t-line',t.line);
+  h('t-rh',t.rh+' <span class="req">*</span>');s('t-rs',t.rs);
+  h('t-ah',t.ah+' <span class="req">*</span>');s('t-as',t.as);
+  h('t-dh',t.dh+' <span class="req">*</span>');s('t-ds',t.ds);
+  s('t-ih',t.ih);s('t-is',t.is);s('t-lh',t.lh);s('t-sub',t.sub);s('t-clr',t.clr);
+  h('t-s1',t.s1);h('t-s2',t.s2);h('t-s3',t.s3);
+  h('t-btype',t.btype+' <span style="font-size:11px;font-weight:400;color:var(--text3);">Booker Type</span> <span class="req">*</span>');
+  renderBks();
+}
+
+// ── FILTER ROOMS ──
+function filterR(type,btn){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.rt').forEach(t=>t.classList.toggle('hid',type!=='all'&&t.dataset.type!==type));
+  document.querySelectorAll('.rs').forEach(s=>{
+    const g=document.getElementById('g-'+s.dataset.s);
+    const vis=g&&[...g.querySelectorAll('.rt')].some(t=>!t.classList.contains('hid'));
+    const show=type==='all'||vis;
+    s.style.display=show?'':'none';if(g)g.style.display=show?'':'none';
+  });
+}
+
+// ── VALIDATE ──
+function validate(){
+  const th=lang==='th';
+  if(!selRoom) return th?'กรุณาเลือกห้อง':'Please select a room';
+  if(!selAct)  return th?'กรุณาเลือกกิจกรรม':'Please select an activity';
+  if(!selBT)   return th?'กรุณาเลือกประเภทผู้จอง':'Please select booker type';
+  if(!document.getElementById('bookDate').value) return th?'กรุณาระบุวันที่':'Please select a date';
+  const s=document.getElementById('startTime').value,e=document.getElementById('endTime').value;
+  if(!s) return th?'กรุณาระบุเวลาเริ่ม':'Please set start time';
+  if(!e) return th?'กรุณาระบุเวลาสิ้นสุด':'Please set end time';
+  if(s>=e) return th?'เวลาสิ้นสุดต้องหลังเวลาเริ่ม':'End time must be after start time';
+  if(!document.getElementById('firstName').value.trim()) return th?'กรุณากรอกชื่อ':'Please enter first name';
+  if(!document.getElementById('lastName').value.trim())  return th?'กรุณากรอกนามสกุล':'Please enter last name';
+  if(!document.getElementById('phone').value.trim())     return th?'กรุณากรอกโทรศัพท์':'Please enter phone';
+  if(!document.getElementById('email').value.trim())     return th?'กรุณากรอกอีเมล':'Please enter email';
+  if(!document.getElementById('attendees').value)        return th?'กรุณาระบุจำนวนผู้เข้าร่วม':'Please enter attendees';
+  return null;
+}
+
+// ── SUBMIT ──
+async function doSubmit(){
+  const err=validate();
+  document.getElementById('aER').classList.remove('show');
+  if(err){document.getElementById('aERmsg').textContent=err;document.getElementById('aER').classList.add('show');document.getElementById('aER').scrollIntoView({behavior:'smooth',block:'nearest'});return;}
+  const btn=document.getElementById('submitBtn'),sp=document.getElementById('spin');
+  btn.disabled=true;sp.style.display='block';
+  document.getElementById('t-sub').textContent=lang==='th'?'กำลังส่ง...':'Sending...';
+
+  const refNo=genRef();
+  const fn=document.getElementById('firstName').value.trim();
+  const ln=document.getElementById('lastName').value.trim();
+  const em=document.getElementById('email').value.trim();
+  const ph=document.getElementById('phone').value.trim();
+  const dp=document.getElementById('dept').value.trim();
+  const pos=document.getElementById('position').value.trim();
+  const nt=document.getElementById('notes').value.trim();
+  const att=document.getElementById('attendees').value;
+  const bdate=document.getElementById('bookDate').value;
+  const st=document.getElementById('startTime').value;
+  const et=document.getElementById('endTime').value;
+  const an=document.getElementById('actNote').value.trim();
+  const ds=lang==='th'?fmtTH(bdate):fmtEN(bdate);
+
+  const b={id:Date.now(),refNo,room:{...selRoom},act:selAct,actNote:an,
+    bt:selBT,date:bdate,st,et,att,fn,ln,ph,em,dp,pos,nt,status:'pending',emailSent:false,at:new Date().toISOString()};
+
+  const params={
+    to_email:em,to_name:fn+' '+ln,ref_no:refNo,
+    room_name:selRoom.th+' ('+selRoom.en+')',
+    activity:selAct+(an?' — '+an:''),
+    booking_date:ds,start_time:st,end_time:et,
+    attendees:att+' คน / people',booker_type:selBT,
+    phone:ph,department:dp||'-',position_id:pos||'-',notes:nt||'-',
+    admin_email:ADMIN_EMAIL,
+    status:lang==='th'?'รอการยืนยันจากเจ้าหน้าที่':'Pending Staff Approval',
+    line_group_url:LINE_GROUP_URL,
+    calendar_url:'https://emailpsuac.sharepoint.com/sites/agropsu/Lists/120/calendar.aspx'
+  };
+
+  let emailSent=false;
+  try{
+    await emailjs.send(EMAILJS_SERVICE_ID,EMAILJS_TEMPLATE_ID,{...params});
+    await emailjs.send(EMAILJS_SERVICE_ID,EMAILJS_TEMPLATE_ID,{...params,to_email:ADMIN_EMAIL,to_name:'Admin (malisa.b)'});
+    emailSent=true;b.emailSent=true;
+  }catch(e){console.warn('EmailJS:',e);}
+
+  bks.unshift(b);save();renderBks();updStats();
+  btn.disabled=false;sp.style.display='none';
+  document.getElementById('t-sub').textContent=tx[lang].sub;
+
+  if(emailSent){
+    document.getElementById('mo-title').textContent=tx[lang].mo_title;
+    document.getElementById('mo-sub').textContent=tx[lang].mo_sub;
+    document.getElementById('mo-email1').textContent=em;
+    document.getElementById('mo-ref').textContent='รหัสอ้างอิง: '+refNo;
+    document.querySelectorAll('#mo-line,#mf-line').forEach(el=>el.textContent=tx[lang].mo_line);
+    document.getElementById('modalOK').classList.add('show');
+  }else{
+    document.getElementById('mf-title').textContent=tx[lang].mf_title;
+    document.getElementById('mf-sub').textContent=tx[lang].mf_sub;
+    document.getElementById('mf-ref').textContent='รหัสอ้างอิง: '+refNo;
+    document.getElementById('modalFail').classList.add('show');
+  }
+  reset();
+}
+
+function reset(){
+  ['firstName','lastName','phone','email','dept','position','notes','actNote','attendees']
+    .forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  document.querySelectorAll('.rt').forEach(t=>t.classList.remove('sel'));
+  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));
+  selRoom=null;selAct=null;selBT=null;
+  document.getElementById('bookDate').value=new Date().toISOString().split('T')[0];
+}
+
+// ── TYPE COLORS ──
+const TC={conf:['ประชุม','Meeting','#FCE4EF','#9B1A5C'],recep:['รับรอง','Reception','#FDE8D8','#9B4A1A'],
+  class:['ห้องเรียน','Classroom','#FFF3CD','#856404'],cowork:['Co-work','Co-work','#EDE9FE','#4C1D95'],other:['อื่นๆ','Other','#E8F5E9','#1A6B3A']};
+
+// ── RENDER ──
+function renderBks(){
+  const list=document.getElementById('bList');
+  document.getElementById('bCount').textContent=bks.length;
+  if(!bks.length){list.innerHTML=`<div class="empty"><span class="eico">🌸</span><div id="t-emp">${tx[lang].emp}</div><div style="font-size:12px;margin-top:3px;opacity:.7;">No bookings yet</div></div>`;return;}
+  list.innerHTML=bks.map(b=>{
+    const tc=TC[b.room.type]||['ห้อง','Room','#F3F4F6','#374151'];
+    const ds=lang==='th'?fmtTH(b.date):fmtEN(b.date);
+    const tag=`<span style="font-size:9.5px;background:${tc[2]};color:${tc[3]};padding:1px 7px;border-radius:10px;margin-left:4px;font-weight:700;">${lang==='th'?tc[0]:tc[1]}</span>`;
+    const sc=b.status==='pending'?'bst-wait':'bst-ok';
+    const st=b.status==='pending'?(lang==='th'?'⏳ รอยืนยัน':'⏳ Pending'):(lang==='th'?'✓ อนุมัติ':'✓ Approved');
+    const eb=b.emailSent?'<span style="font-size:10px;color:#2D7A4F;background:#E8F5EE;border-radius:8px;padding:1px 6px;margin-left:4px;">📧</span>':'';
+    return `<div class="bi" id="bk${b.id}">
+      <button class="btn-del" data-id="${b.id}">✕</button>
+      <div class="bih"><div>
+        <div class="brn">${b.room.th}${tag}</div>
+        <div class="bren">${b.room.en}${b.refNo?' · '+b.refNo:''}</div>
+      </div><span class="bst ${sc}">${st}${eb}</span></div>
+      <div class="bm">
+        <span><span class="mi">📅</span>${ds}</span>
+        <span><span class="mi">⏰</span>${b.st} – ${b.et}${lang==='th'?' น.':''}</span>
+        <span><span class="mi">🎯</span>${b.act}</span>
+        <span><span class="mi">🏷</span>${b.bt}</span>
+        <span><span class="mi">👤</span>${b.fn} ${b.ln}${b.pos?' · '+b.pos:''}</span>
+        <span><span class="mi">👥</span>${b.att} ${lang==='th'?'คน':'people'}</span>
+        <span><span class="mi">📞</span>${b.ph}</span>
+        <span><span class="mi">✉️</span>${b.em}</span>
+        ${b.dp?`<span><span class="mi">🏢</span>${b.dp}</span>`:''}
+        ${b.nt?`<span><span class="mi">📝</span>${b.nt}</span>`:''}
+      </div></div>`;
+  }).join('');
+}
+
+function delBk(id){
+  if(!confirm(lang==='th'?'ยืนยันการลบรายการนี้?':'Delete this booking?'))return;
+  bks=bks.filter(b=>b.id!==id);save();renderBks();updStats();
+}
+function clearAll(){
+  if(!bks.length)return;
+  if(!confirm(lang==='th'?'ลบรายการจองทั้งหมด?':'Delete all bookings?'))return;
+  bks=[];save();renderBks();updStats();
+}
+function save(){try{localStorage.setItem('agro_bks6',JSON.stringify(bks));}catch(e){}}
+function updStats(){
+  const ts=new Date().toISOString().split('T')[0];
+  document.getElementById('sTotal').textContent=bks.length;
+  document.getElementById('sToday').textContent=bks.filter(b=>b.date===ts).length;
+}
+
+// ── EVENT DELEGATION ──
+document.addEventListener('click',function(e){
+  const el=e.target;
+  if(el.dataset.lang){setLang(el.dataset.lang);return;}
+  if(el.classList.contains('tab-btn')&&el.dataset.filter!==undefined){filterR(el.dataset.filter,el);return;}
+  const rt=el.closest('.rt');
+  if(rt){
+    document.querySelectorAll('.rt').forEach(t=>t.classList.remove('sel'));
+    rt.classList.add('sel');
+    selRoom={th:rt.dataset.th,en:rt.dataset.en,cap:rt.dataset.cap,type:rt.dataset.type};
+    return;
+  }
+  if(el.closest('#actChips')&&el.classList.contains('chip')){
+    document.querySelectorAll('#actChips .chip').forEach(c=>c.classList.remove('on'));
+    el.classList.add('on');selAct=el.dataset.v;return;
+  }
+  if(el.closest('#btChips')&&el.classList.contains('chip')){
+    document.querySelectorAll('#btChips .chip').forEach(c=>c.classList.remove('on'));
+    el.classList.add('on');selBT=el.dataset.v;return;
+  }
+  if(el.id==='submitBtn'||el.closest('#submitBtn')){doSubmit();return;}
+  if(el.id==='t-clr'){clearAll();return;}
+  const db=el.closest('.btn-del');
+  if(db&&db.dataset.id){delBk(Number(db.dataset.id));return;}
+  if(el.id==='btnModalClose'){document.getElementById('modalOK').classList.remove('show');return;}
+  if(el.id==='btnFailClose'){document.getElementById('modalFail').classList.remove('show');return;}
+  if(el.id==='modalOK'){document.getElementById('modalOK').classList.remove('show');return;}
+  if(el.id==='modalFail'){document.getElementById('modalFail').classList.remove('show');return;}
+});
+
+renderBks();updStats();
+</script>
+</body>
+</html>
